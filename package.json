@@ -1,0 +1,20 @@
+{
+  "name": "aplicacaonode",
+  "version": "1.0.0",
+  "description": "Stage 8 Node Application Challenge, by Rocketseat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/server.js",
+    "dev": "nodemon ./src.server.js"
+  },
+  "keywords": [],
+  "author": "Alexandre Simões Marra",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
