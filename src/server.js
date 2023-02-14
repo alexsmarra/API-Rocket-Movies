@@ -1,11 +1,13 @@
-// 1
 const express = require("express")
 
-// 2
+// vai pegar o index.js automaticamente
+const routes = require("./routes")
+
+
 const app = express()
+app.use(express.json())
 
-// 3
+app.use(routes)
+
 const PORT = 3333
-
-// 4
 app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`))
