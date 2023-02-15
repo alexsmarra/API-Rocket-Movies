@@ -1,4 +1,4 @@
-// The path is to render without problems in Windows, Mac, Linux, etc.
+// The path is to render without problems in Windows, Mac, Linux, etc
 const path = require("path")
 
 module.exports = {
