@@ -17,10 +17,12 @@ class UsersController {
          throw new AppError("This email is already in use.")
       }
 
+      const hashedPassword = await hash(password, 8)
+
       await knex("users").insert({
          name,
          email,
-         password
+         password: hashedPassword
       })
 
       // we will return an empty json
