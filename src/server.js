@@ -22,7 +22,9 @@ app.use((err, req, res, next) => {
          message: err.message
       })
    }
-
+   
+   console.log(err)
+   
    // server side
    return res.status(500).json({
       status: "error",
