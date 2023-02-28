@@ -30,7 +30,7 @@ class UsersController {
    }
 
    async update(req, res) {
-      const { name, email, password, new_password } = req.body
+      const { name, email, old_password, new_password } = req.body
       const { id } = req.params
 
       const userExists = await knex("users").where({ id }).first()
@@ -45,24 +45,25 @@ class UsersController {
          throw new AppError("This email is already in use.")
       }
 
-      if(password && new_password) {
+      if(!old_password && new_password) {
+         throw new AppError("You need to enter old password to change your password.")
+      }
+
+      if(old_password && new_password) {
          const validUserPassword = await knex
             .select("password")
             .from("users")
             .where({ id })
 
          const matchCurrentPasswordWithNewPassword = 
-            await compare(password, validUserPassword[0].password)
+            await compare(old_password, validUserPassword[0].password)
 
-         console.log(validUserPassword)
-
-         console.log(matchCurrentPasswordWithNewPassword)
-
-         const newHashedPassword = await hash(new_password, 8)
-         
          if(!matchCurrentPasswordWithNewPassword) {
             throw new AppError("You need to enter a old_password correctly.")
          }
+
+         const newHashedPassword = await hash(new_password, 8)
+         
 
          await knex("users").where({ id }).update({
             password: newHashedPassword
@@ -80,49 +81,11 @@ class UsersController {
    async delete(req, res) {
       const { id } = req.params
 
-      await knex("users").where({ id }).delete()
-
+      const userIdSelect = await knex("users").where({ id }).delete()
+   
       res.json()
    }
 }
 
 module.exports = UsersController
 
-// 
-
-// async update(request, response) {
-//    const user_id = request.user.id
-//    const { name, email, password, new_password } = request.body
-
-//    const userExists = await knex('users').where({ email })
-//    if (userExists.length === 1 && userExists[0].id !== user_id) {
-//      throw new AppError('Email já cadastrado')
-//    }
-
-//    if (password && new_password) {
-//      const validUserPassword = await knex
-//        .select('password')
-//        .from('users')
-//        .where('id', user_id)
-
-//      const checkOldPassword = await compare(
-//        password,
-//        validUserPassword[0].password
-//      )
-//      const att_password = await hash(new_password, 8)
-//      if (!checkOldPassword) {
-//        throw new AppError('A senha antiga nao confere')
-//      }
-
-//      const user_update = await knex('users').where('id', user_id).update({
-//        password: att_password
-//      })
-//    }
-
-//    const user_update = await knex('users').where('id', user_id).update({
-//      name,
-//      email
-//    })
-
-//    return response.json()
-//  }

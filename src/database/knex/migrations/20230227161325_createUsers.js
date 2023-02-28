@@ -14,7 +14,3 @@ exports.up = async function(knex) {
 } 
 
 exports.down = knex => knex.schema.dropTable("users")
-
-
-
-
