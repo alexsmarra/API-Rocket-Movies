@@ -29,6 +29,35 @@ class UsersController {
       return res.status(201).json()
    }
 
+   // * show - GET to show a specific record
+   async show(req, res) {
+      const { id } = req.params
+
+      const user = await knex("users").where({ id })
+
+      console.log(user)
+
+      res.json(user)
+   }
+
+   // * index - GET to list multiple records (para listar múltiplos registros)
+   async index(req, res) {
+      const { userId } = req.query
+
+      const data = {}
+
+      const user = await knex("users").where("id", userId)
+
+      const notesWithTags = await knex("movie_notes")
+      .select("title", "description", "movie_tags.name").where("movie_notes.user_id", userId)
+      .innerJoin("movie_tags", "movie_notes.id", "movie_tags.note_id")
+
+      data.User = user
+      data.NotesAndTags = notesWithTags
+
+      res.json(data)
+   }
+       
    async update(req, res) {
       const { name, email, old_password, new_password } = req.body
       const { id } = req.params
@@ -74,6 +103,13 @@ class UsersController {
          name,
          email
       })
+
+      // to update "updated_at" automatically
+      await knex("users")
+      .update({
+      updated_at: knex.fn.now()
+      })
+      .where('id', id);
 
       return res.json()
    }

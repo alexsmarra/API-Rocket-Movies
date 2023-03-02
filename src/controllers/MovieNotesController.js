@@ -20,6 +20,16 @@ class MovieNotesController {
       res.json()
    }
 
+   async show(req, res) {
+      const { title } = req.query
+
+      const notesByName = await knex("movie_notes")
+         .select("title", "description", "rating")
+         .whereLike("title", `%${title}%`) 
+
+      res.json(notesByName)
+   } 
+
    async delete(req, res) {
       const { id } = req.params
 
