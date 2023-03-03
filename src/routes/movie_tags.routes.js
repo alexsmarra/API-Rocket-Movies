@@ -7,6 +7,7 @@ const movie_tagsRoutes = Router()
 const movieTagsController = new MovieTagsController()
 
 movie_tagsRoutes.post("/", movieTagsController.create)
+movie_tagsRoutes.get("/", movieTagsController.index)
 movie_tagsRoutes.delete("/:id", movieTagsController.delete)
 
 module.exports = movie_tagsRoutes

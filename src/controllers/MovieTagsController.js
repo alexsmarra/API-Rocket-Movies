@@ -16,6 +16,18 @@ class MovieTagsController {
       res.json()
    }
 
+   async index(req, res) {
+      const { name } = req.query
+
+      const genresWithTitles = await 
+         knex("movie_tags")
+         .select("movie_notes.title", "name")
+         .whereLike("name", `%${name}%`)
+         .innerJoin("movie_notes", "movie_notes.id", "movie_tags.note_id")
+
+      res.json(genresWithTitles)
+   }
+
    async delete(req, res) {
       const { id } = req.params
 

@@ -6,15 +6,31 @@ class MovieNotesController {
       const { title, description, rating } = req.body
       const { user_id } = req.params
 
-      if(rating <= 5) {
+      const usersId = await knex("users").select("id")
+      
+      const ids = usersId.map(item => {
+         return item.id
+      })
+
+      const userExists = ids.filter(item => item == user_id)
+
+      console.log(userExists)
+
+      if(userExists.length === 0) {
+         throw new AppError("user_id does not exist")
+      }
+
+      if(rating < 0 || rating > 5) {
+         throw new AppError("Rating must be between 0 and 5")
+      }
+
+      if(userExists && rating <= 5 && rating >= 0) {
          await knex("movie_notes").insert({
             title,
             description,
             rating,
             user_id
          })
-      } else {
-         throw new AppError("The rating needs to be between 0 and 5")
       }
 
       res.json()
@@ -29,6 +45,18 @@ class MovieNotesController {
 
       res.json(notesByName)
    } 
+
+   async index(req, res) {
+      const { user_id } = req.params
+
+      const notesWithTags = await 
+         knex("movie_notes")
+         .select("title", "description", "rating", "movie_tags.name")
+         .where("movie_notes.user_id", user_id)
+         .innerJoin("movie_tags", "movie_notes.id", "movie_tags.note_id")
+
+      res.json(notesWithTags)
+   }
 
    async delete(req, res) {
       const { id } = req.params

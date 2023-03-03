@@ -49,7 +49,8 @@ class UsersController {
       const user = await knex("users").where("id", userId)
 
       const notesWithTags = await knex("movie_notes")
-      .select("title", "description", "movie_tags.name").where("movie_notes.user_id", userId)
+      .select("title", "description", "rating", "movie_tags.name")
+      .where("movie_notes.user_id", userId)
       .innerJoin("movie_tags", "movie_notes.id", "movie_tags.note_id")
 
       data.User = user
