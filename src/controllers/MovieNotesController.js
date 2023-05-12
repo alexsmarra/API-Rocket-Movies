@@ -33,7 +33,7 @@ class MovieNotesController {
          })
       }
 
-      res.json()
+      return res.json()
    }
 
    async show(req, res) {
@@ -43,7 +43,7 @@ class MovieNotesController {
          .select("title", "description", "rating")
          .whereLike("title", `%${title}%`) 
 
-      res.json(notesByName)
+      return res.json(notesByName)
    } 
 
    async index(req, res) {
@@ -55,7 +55,7 @@ class MovieNotesController {
          .where("movie_notes.user_id", user_id)
          .innerJoin("movie_tags", "movie_notes.id", "movie_tags.note_id")
 
-      res.json(notesWithTags)
+      return res.json(notesWithTags)
    }
 
    async delete(req, res) {
@@ -63,7 +63,7 @@ class MovieNotesController {
 
       await knex("movie_notes").where({ id }).delete()
 
-      res.json()
+      return res.json()
    }
 }
 

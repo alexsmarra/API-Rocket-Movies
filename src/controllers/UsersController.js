@@ -29,36 +29,6 @@ class UsersController {
       // we will return an empty json
       return res.status(201).json()
    }
-
-   // * show - GET to show a specific record
-   async show(req, res) {
-      const { id } = req.params
-
-      const user = await knex("users").where({ id })
-
-      console.log(user)
-
-      res.json(user)
-   }
-
-   // * index - GET to list multiple records (para listar múltiplos registros)
-   async index(req, res) {
-      const { userId } = req.query
-
-      const data = {}
-
-      const user = await knex("users").where("id", userId)
-
-      const notesWithTags = await knex("movie_notes")
-      .select("title", "description", "rating", "movie_tags.name")
-      .where("movie_notes.user_id", userId)
-      .innerJoin("movie_tags", "movie_notes.id", "movie_tags.note_id")
-
-      data.User = user
-      data.NotesAndTags = notesWithTags
-
-      res.json(data)
-   }
        
    async update(req, res) {
       const { name, email, old_password, new_password } = req.body
@@ -121,7 +91,7 @@ class UsersController {
 
       const userIdSelect = await knex("users").where({ id }).delete()
    
-      res.json()
+      return res.json()
    }
 }
 

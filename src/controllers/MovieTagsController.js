@@ -13,7 +13,7 @@ class MovieTagsController {
             user_id
          })
 
-      res.json()
+         return res.json()
    }
 
    async index(req, res) {
@@ -25,7 +25,7 @@ class MovieTagsController {
          .whereLike("name", `%${name}%`)
          .innerJoin("movie_notes", "movie_notes.id", "movie_tags.note_id")
 
-      res.json(genresWithTitles)
+      return res.json(genresWithTitles)
    }
 
    async delete(req, res) {
@@ -35,7 +35,7 @@ class MovieTagsController {
          .where({ id })
          .delete()
 
-      res.json()
+      return res.json()
    }
 }
 
