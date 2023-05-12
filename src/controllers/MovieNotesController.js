@@ -4,7 +4,7 @@ const AppError = require("../utils/AppError")
 class MovieNotesController {
    async create(req, res) {
       const { title, description, rating } = req.body
-      const { user_id } = req.params
+      const user_id = req.user.id
 
       const usersId = await knex("users").select("id")
       
@@ -47,7 +47,7 @@ class MovieNotesController {
    } 
 
    async index(req, res) {
-      const { user_id } = req.params
+      const user_id = req.user.id
 
       const notesWithTags = await 
          knex("movie_notes")

@@ -32,9 +32,10 @@ class UsersController {
        
    async update(req, res) {
       const { name, email, old_password, new_password } = req.body
-      const { id } = req.params
+      // nosso middleware está pegando o id do usuário e colocando-o na requisição
+      const user_id = req.user.id
 
-      const userExists = await knex("users").where({ id }).first()
+      const userExists = await knex("users").where("id", user_id).first()
 
       if(!userExists) {
          throw new AppError("User not found!")
@@ -54,7 +55,7 @@ class UsersController {
          const validUserPassword = await knex
             .select("password")
             .from("users")
-            .where({ id })
+            .where("id", user_id)
 
          const matchCurrentPasswordWithNewPassword = 
             await compare(old_password, validUserPassword[0].password)
@@ -66,12 +67,12 @@ class UsersController {
          const newHashedPassword = await hash(new_password, 8)
          
 
-         await knex("users").where({ id }).update({
+         await knex("users").where("id", user_id).update({
             password: newHashedPassword
          })
       }
 
-      await knex("users").where({ id }).update({
+      await knex("users").where("id", user_id).update({
          name,
          email
       })
@@ -81,7 +82,7 @@ class UsersController {
       .update({
       updated_at: knex.fn.now()
       })
-      .where('id', id);
+      .where("id", user_id);
 
       return res.json()
    }
