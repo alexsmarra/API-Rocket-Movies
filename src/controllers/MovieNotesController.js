@@ -3,38 +3,95 @@ const AppError = require("../utils/AppError")
 
 class MovieNotesController {
    async create(req, res) {
-      const { title, description, rating } = req.body
+      const { username, title, description, rating, tags } = req.body
       const user_id = req.user.id
 
-      const usersId = await knex("users").select("id")
-      
-      const ids = usersId.map(item => {
-         return item.id
-      })
+      const validUser = await knex("users")
+         .where("id", user_id)
+         .andWhere("name", username)
 
-      const userExists = ids.filter(item => item == user_id)
-
-      console.log(userExists)
-
-      if(userExists.length === 0) {
-         throw new AppError("user_id does not exist")
+      if(validUser.length === 0) {
+         throw new AppError("User not found, unable to create note!")
       }
 
       if(rating < 0 || rating > 5) {
          throw new AppError("Rating must be between 0 and 5")
       }
 
-      if(userExists && rating <= 5 && rating >= 0) {
-         await knex("movie_notes").insert({
-            title,
-            description,
-            rating,
-            user_id
-         })
-      }
+      const note_id = await knex("movie_notes").insert({
+         title,
+         description,
+         rating,
+         user_id
+      })
 
-      return res.json()
+      const allTags = tags.map(tag => {
+         return {
+            note_id,
+            user_id,
+            name: tag
+         }
+      })
+
+      await knex("movie_tags").insert(allTags)
+
+      return res.json(allTags)
    }
+
+
+
+
+
+
+
+
+
+   //
+   async teste(request, response) {
+      const { user_name, title, description, rating, tags } = request.body
+      // const user_id = request.user.id
+      const { user_id } = request.params
+  
+      const validUser = await knex('users')
+        .where('name', user_name)
+        .andWhere('id', user_id)
+  
+      if (validUser.length === 0) {
+        throw new AppError(
+          'Nao foi possivel criar a nota, usuario nao encontrado'
+        )
+      }
+  
+      if (rating < 0 || rating > 5) {
+        throw new AppError(
+          'A nota do filme nao pode ser menor que zero, nem maior de 5'
+        )
+      }
+  
+      const note_id = await knex('movie_notes').insert({
+        title,
+        description,
+        user_grade: Math.ceil(rating),
+        user_id
+      })
+  
+      const tagInsert = tags.map(name => {
+        return {
+          note_id,
+          name,
+          user_id
+        }
+      })
+  
+      await knex('movie_tags').insert(tagInsert)
+  
+      return response.json()
+    }
+   //
+
+
+
+
 
    async show(req, res) {
       const { title } = req.query
