@@ -35,91 +35,76 @@ class MovieNotesController {
 
       await knex("movie_tags").insert(allTags)
 
-      return res.json(allTags)
+      return res.json()
    }
-
-
-
-
-
-
-
-
-
-   //
-   async teste(request, response) {
-      const { user_name, title, description, rating, tags } = request.body
-      // const user_id = request.user.id
-      const { user_id } = request.params
-  
-      const validUser = await knex('users')
-        .where('name', user_name)
-        .andWhere('id', user_id)
-  
-      if (validUser.length === 0) {
-        throw new AppError(
-          'Nao foi possivel criar a nota, usuario nao encontrado'
-        )
-      }
-  
-      if (rating < 0 || rating > 5) {
-        throw new AppError(
-          'A nota do filme nao pode ser menor que zero, nem maior de 5'
-        )
-      }
-  
-      const note_id = await knex('movie_notes').insert({
-        title,
-        description,
-        user_grade: Math.ceil(rating),
-        user_id
-      })
-  
-      const tagInsert = tags.map(name => {
-        return {
-          note_id,
-          name,
-          user_id
-        }
-      })
-  
-      await knex('movie_tags').insert(tagInsert)
-  
-      return response.json()
-    }
-   //
-
-
-
-
-
-   async show(req, res) {
-      const { title } = req.query
-
-      const notesByName = await knex("movie_notes")
-         .select("title", "description", "rating")
-         .whereLike("title", `%${title}%`) 
-
-      return res.json(notesByName)
-   } 
 
    async index(req, res) {
       const user_id = req.user.id
+      const { title } = req.query
+  
+      const notes = await knex('movie_notes')
+         .where({ user_id })
+         .whereLike('title', `%${title}%`)
+         .select('id', 'title', 'description', 'rating')
 
-      const notesWithTags = await 
-         knex("movie_notes")
-         .select("title", "description", "rating", "movie_tags.name")
-         .where("movie_notes.user_id", user_id)
-         .innerJoin("movie_tags", "movie_notes.id", "movie_tags.note_id")
+      const tags = await knex('movie_tags')
+         .orderBy('name')
+         .select('name', 'note_id')
+      const tagsWithNotes = notes.map(note => {
+         const notesTags = tags.filter(tag => tag.note_id === note.id)
 
-      return res.json(notesWithTags)
-   }
+         return {
+            ...note,
+            notesTags
+         }
+      })
+  
+      return res.json(tagsWithNotes)
+    }
+
+   async show(req, res) {
+      const { id } = req.params
+
+      const note = await knex("movie_notes").where({id}).first()
+      const tag = await knex("movie_tags")
+         .where("note_id", id)
+         .select("name")
+
+      return res.json({
+         ...note,
+         tag
+      })
+   } 
 
    async delete(req, res) {
       const { id } = req.params
+      const user_id = req.user.id
 
-      await knex("movie_notes").where({ id }).delete()
+      const validNoteAdmin = await knex("movie_notes")
+            .where({ id })
+            .andWhere({ user_id })
 
+      if(validNoteAdmin.length > 0) {
+         await knex("movie_notes")
+            .where({ id }).delete()
+      } else {
+         throw new AppError("Only note admin can delete note!")
+      }
+
+
+      // const userAdmin = await knex("movie_notes")
+      //    .where('user_id', user_id)
+
+      //    console.log(userAdmin)
+
+      // if(userAdmin) {
+      //    await knex("movie_notes")
+      //       .where({ id })
+      //       .delete()
+      // } else {
+      //    throw new AppError("Only note admin can delete note!")
+      // }
+      
       return res.json()
    }
 }
