@@ -6,6 +6,8 @@ const uploadConfig = require("../configs/upload")
 
 class DiskStorage {
    async saveFile(file) {
+      /* The node's rename module is to move the file or rename the file, in this case we are using to move the file. The first param is where the file is, the second param is where
+      the file will be */
       await fs.promises.rename(
          path.resolve(uploadConfig.TMP_FOLDER, file),
          path.resolve(uploadConfig.UPLOADS_FOLDER, file)
@@ -18,11 +20,13 @@ class DiskStorage {
       const filePath = path.resolve(uploadConfig.UPLOADS_FOLDER, file)
 
       try {
+         /* The stat function check the state of the file, to see if it will be deleted or not */
          await fs.promises.stat(filePath)
       } catch {
          return 
       }
 
+      //  to delete the file
       await fs.promises.unlink(filePath)
    }
 }
