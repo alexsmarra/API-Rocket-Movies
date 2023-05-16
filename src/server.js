@@ -4,6 +4,8 @@ const AppError = require("./utils/AppError")
 
 const uploadConfig = require("./configs/upload")
 
+// npm install cors  para que o nosso backend consiga atender as requisições do nosso frontend
+const cors = require("cors")
 const express = require("express")
 
 // vai pegar o index.js automaticamente
@@ -11,6 +13,7 @@ const routes = require("./routes")
 
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 
 app.use("/files", express.static(uploadConfig.UPLOADS_FOLDER))
