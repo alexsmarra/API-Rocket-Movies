@@ -18,7 +18,7 @@ usersRoutes.post("/", usersController.create)
 /* n precisaremos mais de pegar o id pelo params, pois estamos pegando o id do usuário em nosso
 middleware, no try */
 usersRoutes.put("/", ensureAuthenticated, usersController.update)
-usersRoutes.delete("/:id", usersController.delete)
+usersRoutes.delete("/:id", ensureAuthenticated, usersController.delete)
 /* Remembering, the path is to update a specific field, specific column, "upload.single()" is 
 because we want upload only one file, and "avatar" is the column that will be changed */
 usersRoutes.patch("/avatar", ensureAuthenticated, upload.single("avatar"), userAvatarController.update)

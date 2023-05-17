@@ -53,7 +53,7 @@ class UsersController {
 
       if(old_password && new_password) {
          const validUserPassword = await knex
-            .select("password")
+            .select("password", "name")
             .from("users")
             .where("id", user_id)
 
@@ -89,8 +89,17 @@ class UsersController {
 
    async delete(req, res) {
       const { id } = req.params
+      const user_id = req.user.id
 
-      const userIdSelect = await knex("users").where({ id }).delete()
+      const validUser = await knex("users")
+         .where("id", user_id)
+         .select("id")
+
+      if(validUser[0].id == id) {
+         await knex("users").where({ id }).delete()
+      } else {
+         throw new AppError("Only user admin can delete own profile!")
+      }
    
       return res.json()
    }
