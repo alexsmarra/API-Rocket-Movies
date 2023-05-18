@@ -43,8 +43,17 @@ class UsersController {
 
       const emailExists = await knex("users").where({ email }).first()
 
-      if(emailExists) {
+      const emailUser = await knex("users")
+         .where("id", user_id)
+         .andWhere({ email })
+         .select("email")
+
+      if(emailExists && !emailUser) {
          throw new AppError("This email is already in use.")
+      }
+
+      if(email === "" || name === "") {
+         throw new AppError("The fields must be filled in!")
       }
 
       if(!old_password && new_password) {
