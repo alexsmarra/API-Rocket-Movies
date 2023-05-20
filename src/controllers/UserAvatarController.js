@@ -13,7 +13,7 @@ class UserAvatarController {
       const diskStorage = new DiskStorage()
 
       const user = await knex("users")
-         .where({ 'id': user_id }).first()
+         .where({ id: user_id }).first()
 
       if(!user) {
          throw new AppError("Only authenticated users can change the avatar!", 401)
