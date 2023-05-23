@@ -18,7 +18,7 @@ class MovieNotesController {
          throw new AppError("Rating must be between 0 and 5")
       }
 
-      const note_id = await knex("movie_notes").insert({
+      const [note_id] = await knex("movie_notes").insert({
          title,
          description,
          rating,
