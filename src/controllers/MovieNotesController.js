@@ -68,7 +68,6 @@ class MovieNotesController {
       const note = await knex("movie_notes").where({id}).first()
       const tag = await knex("movie_tags")
          .where("note_id", id)
-         .select("name")
 
       return res.json({
          ...note,
