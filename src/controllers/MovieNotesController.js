@@ -18,6 +18,7 @@ class MovieNotesController {
          throw new AppError("Rating must be between 0 and 5")
       }
 
+
       const [note_id] = await knex("movie_notes").insert({
          title,
          description,
@@ -33,7 +34,9 @@ class MovieNotesController {
          }
       })
 
-      await knex("movie_tags").insert(allTags)
+      if(tags.length > 0) {
+         await knex("movie_tags").insert(allTags)
+      }
 
       return res.json()
    }
@@ -89,20 +92,6 @@ class MovieNotesController {
       } else {
          throw new AppError("Only note admin can delete note!")
       }
-
-
-      // const userAdmin = await knex("movie_notes")
-      //    .where('user_id', user_id)
-
-      //    console.log(userAdmin)
-
-      // if(userAdmin) {
-      //    await knex("movie_notes")
-      //       .where({ id })
-      //       .delete()
-      // } else {
-      //    throw new AppError("Only note admin can delete note!")
-      // }
       
       return res.json()
    }
