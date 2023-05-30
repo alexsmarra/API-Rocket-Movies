@@ -1,4 +1,5 @@
 require("express-async-errors")
+require("dotenv/config")
 
 const AppError = require("./utils/AppError")
 
@@ -38,5 +39,6 @@ app.use((err, req, res, next) => {
    })
 })
 
-const PORT = 3333
+// caso por algum motivo não encontre nossa variável sensível do nosso arquivo .env, colocamos o ' || 3333 '
+const PORT = process.env.PORT || 3333
 app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`))
